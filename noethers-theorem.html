@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Noether's Theorem and Spacetime Symmetries · LYC's notes</title>
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="katex.min.css">
+  <script defer src="katex.min.js"></script>
+  <script defer src="auto-render.min.js"></script>
+  <script defer src="math.js"></script>
+</head>
+<body>
+  <header>
+    <h1>LYC's notes</h1>
+    <nav aria-label="主导航"><a href="index.html">Home</a> &middot; <a href="about.html">About</a></nav>
+    <hr>
+  </header>
+  <main>
+<article>
+<h2>Noether's Theorem and Spacetime Symmetries</h2>
+<p>This note is basically based on David Tong’s lecture notes and Schwartz’s textbook. I use $g_{\mu\nu}=\operatorname{diag}(1,-1,-1,-1)$ and $c=\hbar=1$. Repeated indices are summed. All transformations are kept to first order, and $\delta\phi_a$ denotes the variation at fixed $x$.</p>
+
+<h2 id="noethers-theorem">Noether’s theorem</h2>
+
+<p>This theorem reads:</p>
+
+<p>Every continuous global symmetry of the action gives rise to a conserved current:
+<span class="kdmath">$\boxed{\partial_\mu j^\mu=0}$</span></p>
+
+<p>when the equations of motion hold.</p>
+
+<hr />
+<h3 id="proof">Proof:</h3>
+
+<p>For a set of fields $\phi_a(x)$, the action is</p>
+
+<div class="kdmath">$$
+S=\int d^4x\,\mathcal L(\phi_a,\partial_\mu\phi_a).
+$$</div>
+
+<p>Consider an infinitesimal transformation</p>
+
+<div class="kdmath">$$
+\phi_a\longrightarrow\phi_a+\delta\phi_a,
+\qquad
+\delta\phi_a=\epsilon X_a,
+\qquad
+\partial_\mu\epsilon=0.
+$$</div>
+
+<p>Using the chain rule,</p>
+
+<div class="kdmath">$$
+\delta\mathcal L
+=
+\frac{\partial\mathcal L}{\partial\phi_a}\delta\phi_a
++
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi_a)}
+\partial_\mu(\delta\phi_a),
+$$</div>
+
+<p>where $\delta$ and $\partial_\mu$ commute.</p>
+
+<p>Applying the product rule,</p>
+
+<div class="kdmath">$$
+\begin{aligned}
+\delta\mathcal L
+={}&
+\left[
+\frac{\partial\mathcal L}{\partial\phi_a}
+-
+\partial_\mu
+\left(
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi_a)}
+\right)
+\right]\delta\phi_a\\
+&+
+\partial_\mu
+\left(
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi_a)}
+\delta\phi_a
+\right).
+\end{aligned}
+$$</div>
+
+<p>The fields satisfy the Euler–Lagrange 
+equations:</p>
+
+<div class="kdmath">$$
+\frac{\partial\mathcal L}{\partial\phi_a}
+-
+\partial_\mu
+\left(
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi_a)}
+\right)
+=0.
+$$</div>
+
+<p>Therefore, on solutions,</p>
+
+<div class="kdmath">$$
+\delta\mathcal L
+=
+\partial_\mu
+\left(
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi_a)}
+\delta\phi_a
+\right).
+$$</div>
+
+<p>Independently, if the transformation is a symmetry, the Lagrangian density may change by a total divergence:</p>
+
+<div class="kdmath">$$
+\boxed{\delta\mathcal L=\partial_\mu F^\mu.}
+$$</div>
+
+<p>This symmetry condition is checked without using the equations of motion. It is allowed because</p>
+
+<div class="kdmath">$$
+\delta S
+=
+\int d^4x\,\partial_\mu F^\mu
+=
+\int_{\partial\Omega}d\Sigma_\mu\,F^\mu
+$$</div>
+
+<p>is only a boundary term. If the boundary integral vanishes, $\delta S=0$. Strict invariance of $\mathcal L$ corresponds to choosing $F^\mu=0$.</p>
+
+<p>We now have two expressions for the same variation:</p>
+
+<div class="kdmath">$$
+\delta\mathcal L
+=
+\underbrace{
+\partial_\mu
+\left(
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi_a)}
+\delta\phi_a
+\right)
+}_{\text{Euler–Lagrange equations}}
+=
+\underbrace{\partial_\mu F^\mu}_{\text{symmetry}}.
+$$</div>
+
+<p>Subtracting,</p>
+
+<div class="kdmath">$$
+\partial_\mu
+\left[
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi_a)}
+\delta\phi_a-F^\mu
+\right]=0.
+$$</div>
+
+<p>Define the Noether current:</p>
+
+<div class="kdmath">$$
+j^\mu
+\equiv
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi_a)}
+\delta\phi_a-F^\mu.
+$$</div>
+
+<p>Then</p>
+
+<div class="kdmath">$$
+\partial_\mu j^\mu=0.
+$$</div>
+
+<h3 id="vanishing-epsilon">Vanishing $\epsilon$</h3>
+
+<p>Since $\delta\phi_a=\epsilon X_a$, write $F^\mu=\epsilon K^\mu$. Thus,</p>
+
+<div class="kdmath">$$
+j^\mu
+=
+\epsilon
+\left(
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi_a)}
+X_a-K^\mu
+\right),
+$$</div>
+
+<p>and</p>
+
+<div class="kdmath">$$
+\epsilon\,\partial_\mu
+\left(
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi_a)}
+X_a-K^\mu
+\right)=0.
+$$</div>
+
+<p>Because $\epsilon$ is an arbitrary constant,</p>
+
+<div class="kdmath">$$
+\partial_\mu
+\left(
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi_a)}
+X_a-K^\mu
+\right)=0.
+$$</div>
+
+<p>So we can ignore $\epsilon$, $j^\mu$ includes the infinitesimal transformation parameters.</p>
+
+<h2 id="translations">Translations</h2>
+
+<p>Consider the infinitesimal translation</p>
+
+<div class="kdmath">$$
+x'^\nu=x^\nu-\epsilon^\nu,
+\qquad
+\partial_\mu\epsilon^\nu=0.
+$$</div>
+
+<p>Since $\phi’_a(x’)=\phi_a(x)$,</p>
+
+<div class="kdmath">$$
+\phi'_a(x)
+=
+\phi_a(x+\epsilon)
+=
+\phi_a(x)+\epsilon^\nu\partial_\nu\phi_a(x).
+$$</div>
+
+<p>Therefore,</p>
+
+<div class="kdmath">$$
+\delta\phi_a=\epsilon^\nu\partial_\nu\phi_a.
+$$</div>
+
+<p>If $\mathcal L$ has no explicit dependence on $x$, similarly,</p>
+
+<div class="kdmath">$$
+\delta\mathcal L
+=
+\epsilon^\nu\partial_\nu\mathcal L.
+$$</div>
+
+<p>To express this as a divergence with index $\mu$,</p>
+
+<div class="kdmath">$$
+\begin{aligned}
+\delta\mathcal L
+&=
+\epsilon^\nu\delta^\mu{}_\nu\partial_\mu\mathcal L\\
+&=
+\partial_\mu
+\left(
+\epsilon^\nu\delta^\mu{}_\nu\mathcal L
+\right).
+\end{aligned}
+$$</div>
+
+<p>We choose</p>
+
+<div class="kdmath">$$
+F^\mu=\epsilon^\nu\delta^\mu{}_\nu\mathcal L.
+$$</div>
+
+<p>Substitute into the Noether current:</p>
+
+<div class="kdmath">$$
+\begin{aligned}
+j^\mu
+&=
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi_a)}
+\delta\phi_a-F^\mu\\
+&=
+\epsilon^\nu
+\left(
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi_a)}
+\partial_\nu\phi_a
+-\delta^\mu{}_\nu\mathcal L
+\right).
+\end{aligned}
+$$</div>
+
+<p>Define the canonical energy–momentum tensor:</p>
+
+<div class="kdmath">$$
+T^\mu{}_\nu
+\equiv
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi_a)}
+\partial_\nu\phi_a
+-\delta^\mu{}_\nu\mathcal L.
+$$</div>
+
+<p>Then</p>
+
+<div class="kdmath">$$
+j^\mu=\epsilon^\nu T^\mu{}_\nu,
+$$</div>
+
+<p>so</p>
+
+<div class="kdmath">$$
+0=\partial_\mu j^\mu
+=\epsilon^\nu\partial_\mu T^\mu{}_\nu.
+$$</div>
+
+<p>The four components of $\epsilon^\nu$ are independent. Their coefficients must vanish separately:</p>
+
+<div class="kdmath">$$
+\partial_\mu T^\mu{}_\nu=0,
+\qquad \nu=0,1,2,3.
+$$</div>
+
+<p>We are comparing coefficients, not dividing by a vector. The index $\nu$ labels the four translation currents.</p>
+
+<p>Raising the second index,</p>
+
+<div class="kdmath">$$
+T^{\mu\nu}
+=
+g^{\nu\rho}T^\mu{}_\rho
+=
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi_a)}
+\partial^\nu\phi_a
+-g^{\mu\nu}\mathcal L,
+$$</div>
+
+<p>and</p>
+
+<div class="kdmath">$$
+\partial_\mu T^{\mu\nu}=0.
+$$</div>
+
+<p>The conserved four-momentum is</p>
+
+<div class="kdmath">$$
+P^\nu=\int d^3x\,T^{0\nu}.
+$$</div>
+
+<p>Indeed,
+<span class="kdmath">$\frac{dP^\nu}{dt}
+=
+-\int d^3x\,\partial_iT^{i\nu}
+=
+-\oint dS_i\,T^{i\nu}
+=0,$</span></p>
+
+<p>assuming that the boundary flux vanishes.</p>
+
+<p>In particular,</p>
+
+<div class="kdmath">$$
+E=P^0=\int d^3x\,T^{00},
+\qquad
+P^i=\int d^3x\,T^{0i}.
+$$</div>
+
+<h3 id="example-the-real-kleingordon-field">Example: the real Klein–Gordon field</h3>
+
+<p>The Lagrangian density is</p>
+
+<div class="kdmath">$$
+\mathcal L
+=
+\frac12g^{\alpha\beta}
+\partial_\alpha\phi\,\partial_\beta\phi
+-\frac12m^2\phi^2.
+$$</div>
+
+<p>Then</p>
+
+<div class="kdmath">$$
+\begin{aligned}
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi)}
+&=
+\frac12g^{\alpha\beta}
+\left(
+\delta^\mu{}_\alpha\partial_\beta\phi
++
+\partial_\alpha\phi\,\delta^\mu{}_\beta
+\right)\\
+&=g^{\mu\nu}\partial_\nu\phi
+=\partial^\mu\phi.
+\end{aligned}
+$$</div>
+
+<p>Hence,</p>
+
+<div class="kdmath">$$
+T^{\mu\nu}
+=
+\partial^\mu\phi\,\partial^\nu\phi
+-g^{\mu\nu}\mathcal L.
+$$</div>
+
+<p>For this field, 
+$T^{\mu\nu}=T^{\nu\mu}$, and</p>
+
+<div class="kdmath">$$
+T^{00}
+=
+\frac12\dot\phi^{\,2}
++\frac12(\nabla\phi)^2
++\frac12m^2\phi^2.
+$$</div>
+
+<h2 id="lorentz-transformations">Lorentz transformations</h2>
+
+<p>Here we consider a scalar field with a Lorentz-invariant Lagrangian, such as the Klein–Gordon field.</p>
+
+<p>An infinitesimal Lorentz transformation is</p>
+
+<div class="kdmath">$$
+x'^\mu=\Lambda^\mu{}_\nu x^\nu,
+\qquad
+\Lambda^\mu{}_\nu=\delta^\mu{}_\nu+\omega^\mu{}_\nu,
+$$</div>
+
+<p>where $\omega^\mu{}_\nu$ is infinitesimal and constant.</p>
+
+<p>The Lorentz condition is</p>
+
+<div class="kdmath">$$
+\Lambda^\mu{}_\rho g^{\rho\sigma}
+\Lambda^\nu{}_\sigma=g^{\mu\nu}.
+$$</div>
+
+<p>Expanding to first order,</p>
+
+<div class="kdmath">$$
+g^{\mu\nu}+\omega^{\mu\nu}+\omega^{\nu\mu}
+=g^{\mu\nu}.
+$$</div>
+
+<p>Thus,</p>
+
+<div class="kdmath">$$
+\omega^{\mu\nu}=-\omega^{\nu\mu},
+\qquad
+\omega_{\mu\nu}=-\omega_{\nu\mu}.
+$$</div>
+
+<p>In particular,</p>
+
+<div class="kdmath">$$
+\omega^\mu{}_\mu=g^{\mu\rho}\omega_{\rho\mu}=0.
+$$</div>
+
+<p>For a scalar field,</p>
+
+<div class="kdmath">$$
+\phi'(x)=\phi(\Lambda^{-1}x).
+$$</div>
+
+<p>Since $\Lambda^{-1}=I-\omega$ to first order,</p>
+
+<div class="kdmath">$$
+\phi'(x)
+=
+\phi(x)-\omega^\rho{}_\sigma x^\sigma\partial_\rho\phi(x).
+$$</div>
+
+<p>Therefore,</p>
+
+<div class="kdmath">$$
+\delta\phi=-\omega^\rho{}_\sigma x^\sigma\partial_\rho\phi.
+$$</div>
+
+<p>Similarly,</p>
+
+<div class="kdmath">$$
+\delta\mathcal L
+=
+-\omega^\mu{}_\nu x^\nu\partial_\mu\mathcal L.
+$$</div>
+
+<p>Using the product rule,</p>
+
+<div class="kdmath">$$
+\begin{aligned}
+\delta\mathcal L
+&=
+-\partial_\mu
+\left(\omega^\mu{}_\nu x^\nu\mathcal L\right)
++\omega^\mu{}_\nu(\partial_\mu x^\nu)\mathcal L\\
+&=
+-\partial_\mu
+\left(\omega^\mu{}_\nu x^\nu\mathcal L\right)
++\omega^\mu{}_\mu\mathcal L\\
+&=
+-\partial_\mu
+\left(\omega^\mu{}_\nu x^\nu\mathcal L\right).
+\end{aligned}
+$$</div>
+
+<p>Thus, we may choose</p>
+
+<div class="kdmath">$$
+F^\mu=-\omega^\mu{}_\nu x^\nu\mathcal L.
+$$</div>
+
+<p>Substitute into the Noether current:</p>
+
+<div class="kdmath">$$
+\begin{aligned}
+j^\mu
+&=
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi)}
+\delta\phi-F^\mu\\
+&=
+-\omega^\rho{}_\sigma x^\sigma
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi)}
+\partial_\rho\phi
++\omega^\mu{}_\sigma x^\sigma\mathcal L\\
+&=
+-\omega^\rho{}_\sigma x^\sigma
+\left(
+\frac{\partial\mathcal L}{\partial(\partial_\mu\phi)}
+\partial_\rho\phi
+-\delta^\mu{}_\rho\mathcal L
+\right)\\
+&=
+-\omega^\rho{}_\sigma x^\sigma T^\mu{}_\rho\\
+&=
+-\omega_{\rho\sigma}x^\sigma T^{\mu\rho}.
+\end{aligned}
+$$</div>
+
+<p>Interchanging the dummy indices and using antisymmetry,</p>
+
+<div class="kdmath">$$
+-\omega_{\rho\sigma}x^\sigma T^{\mu\rho}
+=
+\omega_{\rho\sigma}x^\rho T^{\mu\sigma}.
+$$</div>
+
+<p>Averaging these two forms gives</p>
+
+<div class="kdmath">$$
+j^\mu
+=
+\frac12\omega_{\rho\sigma}
+\left(
+x^\rho T^{\mu\sigma}-x^\sigma T^{\mu\rho}
+\right).
+$$</div>
+
+<p>Define</p>
+
+<div class="kdmath">$$
+J^{\mu\rho\sigma}
+\equiv
+x^\rho T^{\mu\sigma}-x^\sigma T^{\mu\rho}.
+$$</div>
+
+<p>Then
+<span class="kdmath">$j^\mu=\frac12\omega_{\rho\sigma}J^{\mu\rho\sigma},
+\qquad
+J^{\mu\rho\sigma}=-J^{\mu\sigma\rho}.$</span></p>
+
+<p>The factor $1/2$ avoids counting each antisymmetric pair twice:</p>
+
+<div class="kdmath">$$
+j^\mu
+=
+\sum_{\rho<\sigma}\omega_{\rho\sigma}J^{\mu\rho\sigma}.
+$$</div>
+
+<p>Since $\partial_\mu j^\mu=0$,</p>
+
+<div class="kdmath">$$
+\sum_{\rho<\sigma}
+\omega_{\rho\sigma}\partial_\mu J^{\mu\rho\sigma}=0.
+$$</div>
+
+<p>There are six independent parameters,</p>
+
+<div class="kdmath">$$
+\omega_{01},\ \omega_{02},\ \omega_{03},\
+\omega_{12},\ \omega_{13},\ \omega_{23}.
+$$</div>
+
+<p>Their coefficients vanish separately:</p>
+
+<div class="kdmath">$$
+\partial_\mu J^{\mu\rho\sigma}=0,
+\qquad \rho<\sigma.
+$$</div>
+
+<p>The index $\mu$ is the current index, while the pair $(\rho,\sigma)$ labels the six Lorentz currents. Antisymmetry leaves</p>
+
+<div class="kdmath">$$
+4\times 6=24
+$$</div>
+
+<p>component slots: six four-component currents. Contracting $\mu$ in the divergence gives six conservation equations.</p>
+
+<p>The conserved charges are</p>
+
+<div class="kdmath">$$
+Q^{\rho\sigma}
+=
+\int d^3x\,J^{0\rho\sigma}
+=
+\int d^3x
+\left(
+x^\rho T^{0\sigma}-x^\sigma T^{0\rho}
+\right),
+$$</div>
+
+<p>again assuming vanishing boundary fluxes.</p>
+
+<p>For spatial rotations,</p>
+
+<div class="kdmath">$$
+Q^{ij}
+=
+\int d^3x
+\left(
+x^iT^{0j}-x^jT^{0i}
+\right).
+$$</div>
+
+<p>These are the angular-momentum components:</p>
+
+<div class="kdmath">$$
+L^1=Q^{23},
+\qquad
+L^2=Q^{31},
+\qquad
+L^3=Q^{12}.
+$$</div>
+
+<p>The other three charges correspond to boosts:</p>
+
+<div class="kdmath">$$
+Q^{0i}
+=
+tP^i-\int d^3x\,x^iT^{00}.
+$$</div>
+
+<p>For the Klein–Gordon field, we can check conservation directly:</p>
+
+<div class="kdmath">$$
+\begin{aligned}
+\partial_\mu J^{\mu\rho\sigma}
+&=
+T^{\rho\sigma}-T^{\sigma\rho}
++x^\rho\partial_\mu T^{\mu\sigma}
+-x^\sigma\partial_\mu T^{\mu\rho}\\
+&=0,
+\end{aligned}
+$$</div>
+
+<p>using $T^{\rho\sigma}=T^{\sigma\rho}$ and $\partial_\mu T^{\mu\nu}=0$.</p>
+
+<p>For vector or spinor fields, the canonical Lorentz current generally also includes a spin term. The expression above is the scalar-field result.</p>
+</article>
+  </main>
+</body>
+</html>

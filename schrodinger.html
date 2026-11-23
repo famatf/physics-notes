@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>定态薛定谔方程的有限差分法 · LYC's notes</title>
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="katex.min.css">
+  <script defer src="katex.min.js"></script>
+  <script defer src="auto-render.min.js"></script>
+  <script defer src="math.js"></script>
+</head>
+<body>
+  <header>
+    <h1>LYC's notes</h1>
+    <nav aria-label="主导航"><a href="index.html">Home</a> &middot; <a href="about.html">About</a></nav>
+    <hr>
+  </header>
+  <main>
+<article>
+<h2>定态薛定谔方程的有限差分法</h2>
+<p>定态薛定谔方程如下，$V(x)$为任意给定势能函数：
+<span class="kdmath">$-\frac{\hbar}{2m}\frac{d^2\psi}{dx}+V(x)\psi(x)=E\psi(x)$</span>
+发现方程含有对 $x$ 的二阶导，采用差分近似：
+<span class="kdmath">$\left. \frac{d^2\psi}{dx}\right|_{x=x_i} \approx \frac{\psi_{i+1}-2\psi_i+\psi_{i-1}}{h^2}$</span>
+推导如下：</p>
+
+<p>$x$区间的总长度为$L$，在$x$上取$N$个小区间，则每个区间的长度为$h=\frac{L}{N}$，设$\psi(x)$在$x_i$附近光滑，其中$x_i$表示第$i$个点的坐标，自然有：
+<span class="kdmath">$x_i = ih,\quad x_{i+1}=(i+1)h, \quad x_{i-1}=(i-1)h$</span>
+把$\psi(x_i+h)$和$\psi(x_i-h)$在$x_i$处作泰勒展开：
+<span class="kdmath">$\psi(x_i+h)=\psi(x_i)+h\psi'(x_i)+\frac{h^2}{2}\psi''(x_i)+\frac{h^2}{3!}\psi'''(x_i)+\frac{h^3}{4!}\psi^{(4)}(x_i)+\cdots$</span></p>
+
+<div class="kdmath">$$
+\psi(x_i-h)=\psi(x_i)-h\psi'(x_i)+\frac{h^2}{2}\psi''(x_i)-\frac{h^2}{3!}\psi'''(x_i)+\frac{h^3}{4!}\psi^{(4)}(x_i)+\cdots
+$$</div>
+
+<p>二者相加：
+<span class="kdmath">$\psi(x_i+h)+\psi(x_i-h)=2\psi(x_i)+h^2\psi''(x_i)+\cdots$</span>
+我们把$\psi(x_i)$写成$\psi_i$，就得到差分法的近似公式：
+<span class="kdmath">$\psi''_i \approx \frac{\psi_{i+1}-2\psi_i+\psi_{i-1}}{h^2}$</span>
+把它带入薛定谔方程：
+<span class="kdmath">$-\frac{\hbar^2}{2m}\frac{\psi_{i+1}-2\psi_i+\psi_{i-1}}{h^2}V_i\psi_i=E\psi_i$</span>
+其中$V_i=V(x_i)$，令$t=\hbar^2/2mh^2$，则方程可以写成：
+<span class="kdmath">$-t\psi_{i-1}+(2t+V_i)\psi_i-t\psi_{i+1}=E\psi_i$</span>
+对应求矩阵本征值的问题：
+<span class="kdmath">$H\Psi = E\Psi$</span>
+我们采用Dirichlet边界条件，即$\psi_0=\psi_N=0$，因此未知量只有内部$N-1$个点。矩阵$H$的维数为$N-1$，波函数为列向量：
+<span class="kdmath">$\Psi=\begin{pmatrix}
+\psi_1\\
+\psi_2\\
+\vdots\\
+\psi_{N-1}
+\end{pmatrix}$</span>
+矩阵为三对角形式：
+<span class="kdmath">$\begin{pmatrix}
+2t+V_1 & -t & 0 & \cdots & 0\\
+-t & 2t+V_2 & -t & \cdots & 0\\
+0 & -t & 2t+V_3 & \cdots & 0\\
+\vdots & \vdots & \vdots & \ddots & -t\\
+0 & 0 & 0 & -t & 2t+V_{N-1}\
+\end{pmatrix}$</span>
+其中，两条副对角线上的$-t$来自于差分近似，主对角线的$2t$来源于动能项，$V_i$来自势能项。考虑到矩阵的形式，我们在python使用<code class="language-plaintext highlighter-rouge">from scipy.linalg import eigh_tridiagonal</code>求解，使用方法为<code class="language-plaintext highlighter-rouge">eigh_tridiagonal(d, e)</code>，<code class="language-plaintext highlighter-rouge">d</code>为主对角线，<code class="language-plaintext highlighter-rouge">e</code>为两条相同的副对角线。</p>
+
+<p>只要间隔$N$的数量足够大，就可以求得足够准确的数值解。</p>
+
+<p>下面的程序$N=2000$，求解了四种势场：一维无限深势阱、谐振子势、$\delta$函数势和有限深势阱。对于$\delta$函数，数值上无法表示无穷高，使用一个网格点代替：
+<span class="kdmath">$V_\delta[i_\delta] = \frac{\text{intensity}}{h}$</span>
+下面的程序运行后画出前五个态的能量与波函数。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="n">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="n">scipy.linalg</span> <span class="kn">import</span> <span class="n">eigh_tridiagonal</span>
+
+<span class="c1"># Use dimensionless units: hbar = m = 1.
+</span><span class="n">hbar</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">m</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+<span class="n">N</span> <span class="o">=</span> <span class="mi">2000</span>
+<span class="n">number_of_states</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">levels</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">number_of_states</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">omega</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">delta_strength</span> <span class="o">=</span> <span class="o">-</span><span class="mf">10.0</span>
+<span class="n">delta_position</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">well_width</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">well_depth</span> <span class="o">=</span> <span class="mf">20.0</span>
+
+
+<span class="k">def</span> <span class="nf">make_grid</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">Create a grid whose endpoints are fixed boundary points.</span><span class="sh">"""</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_max</span> <span class="o">-</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">linspace</span><span class="p">(</span><span class="n">x_min</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">-</span> <span class="n">h</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">h</span>
+
+
+<span class="k">def</span> <span class="nf">infinite_well</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">The infinite walls come from the fixed endpoints of the grid.</span><span class="sh">"""</span>
+    <span class="k">return</span> <span class="n">np</span><span class="p">.</span><span class="nf">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">harmonic_oscillator</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">m</span> <span class="o">*</span> <span class="n">omega</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+
+
+<span class="k">def</span> <span class="nf">delta_potential</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">Approximate a Dirac delta by putting its area on one grid point.</span><span class="sh">"""</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">delta_index</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">argmin</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="nf">abs</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">delta_position</span><span class="p">))</span>
+    <span class="n">V</span><span class="p">[</span><span class="n">delta_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">delta_strength</span> <span class="o">/</span> <span class="n">h</span>
+    <span class="k">return</span> <span class="n">V</span>
+
+
+<span class="k">def</span> <span class="nf">finite_square_well</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nf">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">V</span><span class="p">[</span><span class="n">np</span><span class="p">.</span><span class="nf">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">well_width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">well_depth</span>
+    <span class="k">return</span> <span class="n">V</span>
+
+
+<span class="k">def</span> <span class="nf">solve_schrodinger</span><span class="p">(</span><span class="n">V_x</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">Build and diagonalize the finite-difference Hamiltonian.</span><span class="sh">"""</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="n">V_x</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">hbar</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">m</span> <span class="o">*</span> <span class="n">h</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">V_x</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="o">-</span><span class="n">t</span> <span class="o">*</span> <span class="n">np</span><span class="p">.</span><span class="nf">ones</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">E</span><span class="p">,</span> <span class="n">psi</span> <span class="o">=</span> <span class="nf">eigh_tridiagonal</span><span class="p">(</span>
+        <span class="n">d</span><span class="p">,</span>
+        <span class="n">e</span><span class="p">,</span>
+        <span class="n">select</span><span class="o">=</span><span class="sh">'</span><span class="s">i</span><span class="sh">'</span><span class="p">,</span>
+        <span class="n">select_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">number_of_states</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">E</span><span class="p">,</span> <span class="n">psi</span> <span class="o">/</span> <span class="n">np</span><span class="p">.</span><span class="nf">sqrt</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">plot_potential</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">V_x</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">Draw V(x); use a vertical line for the delta potential display.</span><span class="sh">"""</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="sh">'</span><span class="s">Delta Potential</span><span class="sh">'</span><span class="p">:</span>
+        <span class="n">ax</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="nf">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">black</span><span class="sh">'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sh">'</span><span class="s">V(x)</span><span class="sh">'</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">.</span><span class="nf">vlines</span><span class="p">(</span><span class="n">delta_position</span><span class="p">,</span> <span class="n">delta_strength</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">black</span><span class="sh">'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ax</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">V_x</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">black</span><span class="sh">'</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sh">'</span><span class="s">V(x)</span><span class="sh">'</span><span class="p">)</span>
+
+
+<span class="n">potentials</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="sh">'</span><span class="s">Infinite Well</span><span class="sh">'</span><span class="p">,</span> <span class="n">infinite_well</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+    <span class="p">(</span><span class="sh">'</span><span class="s">Harmonic Oscillator</span><span class="sh">'</span><span class="p">,</span> <span class="n">harmonic_oscillator</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">),</span>
+    <span class="p">(</span><span class="sh">'</span><span class="s">Delta Potential</span><span class="sh">'</span><span class="p">,</span> <span class="n">delta_potential</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">),</span>
+    <span class="p">(</span><span class="sh">'</span><span class="s">Finite Square Well</span><span class="sh">'</span><span class="p">,</span> <span class="n">finite_square_well</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">potential</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="ow">in</span> <span class="n">potentials</span><span class="p">:</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="nf">make_grid</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)</span>
+    <span class="n">V_x</span> <span class="o">=</span> <span class="nf">potential</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+    <span class="n">E</span><span class="p">,</span> <span class="n">psi</span> <span class="o">=</span> <span class="nf">solve_schrodinger</span><span class="p">(</span><span class="n">V_x</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+    <span class="n">results</span><span class="p">.</span><span class="nf">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">V_x</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">psi</span><span class="p">))</span>
+
+<span class="c1"># Make one large figure for each potential. Each figure has three subplots:
+# potential, energy levels, and the first five wave functions.
+</span><span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">V_x</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">psi</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="nf">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">fig</span><span class="p">.</span><span class="nf">suptitle</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="n">ax_potential</span><span class="p">,</span> <span class="n">ax_energy</span><span class="p">,</span> <span class="n">ax_wave</span> <span class="o">=</span> <span class="n">axes</span>
+
+    <span class="nf">plot_potential</span><span class="p">(</span><span class="n">ax_potential</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">V_x</span><span class="p">)</span>
+    <span class="n">ax_potential</span><span class="p">.</span><span class="nf">set_title</span><span class="p">(</span><span class="sh">'</span><span class="s">Potential</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">ax_potential</span><span class="p">.</span><span class="nf">set_xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Position x</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">ax_potential</span><span class="p">.</span><span class="nf">set_ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">V(x)</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">ax_potential</span><span class="p">.</span><span class="nf">set_xlim</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)</span>
+    <span class="n">ax_potential</span><span class="p">.</span><span class="nf">legend</span><span class="p">()</span>
+
+    <span class="n">ax_energy</span><span class="p">.</span><span class="nf">bar</span><span class="p">(</span><span class="n">levels</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="sh">'</span><span class="s">steelblue</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">ax_energy</span><span class="p">.</span><span class="nf">set_title</span><span class="p">(</span><span class="sh">'</span><span class="s">Energy Levels</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">ax_energy</span><span class="p">.</span><span class="nf">set_xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">State Number</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">ax_energy</span><span class="p">.</span><span class="nf">set_ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Energy</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">ax_energy</span><span class="p">.</span><span class="nf">set_xticks</span><span class="p">(</span><span class="n">levels</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">number_of_states</span><span class="p">):</span>
+        <span class="n">ax_wave</span><span class="p">.</span><span class="nf">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">psi</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="sh">'</span><span class="s">n = </span><span class="si">{</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">ax_wave</span><span class="p">.</span><span class="nf">set_title</span><span class="p">(</span><span class="sh">'</span><span class="s">Wave Functions</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">ax_wave</span><span class="p">.</span><span class="nf">set_xlabel</span><span class="p">(</span><span class="sh">'</span><span class="s">Position x</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">ax_wave</span><span class="p">.</span><span class="nf">set_ylabel</span><span class="p">(</span><span class="sh">'</span><span class="s">psi(x)</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">ax_wave</span><span class="p">.</span><span class="nf">set_xlim</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">)</span>
+    <span class="n">ax_wave</span><span class="p">.</span><span class="nf">legend</span><span class="p">()</span>
+
+    <span class="n">fig</span><span class="p">.</span><span class="nf">tight_layout</span><span class="p">(</span><span class="n">rect</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.96</span><span class="p">])</span>
+
+<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
+
+
+</code></pre></div></div>
+
+<hr />
+
+<p>图片</p>
+
+<hr />
+
+<p>参考：</p>
+
+<ul>
+  <li>
+    <p>https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.eigh_tridiagonal.html</p>
+  </li>
+  <li>
+    <p>https://www.youtube.com/watch?v=ay0zZ8SUMSk</p>
+  </li>
+</ul>
+</article>
+  </main>
+</body>
+</html>
